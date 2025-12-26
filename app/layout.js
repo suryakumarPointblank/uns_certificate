@@ -8,28 +8,28 @@ const barlow = Barlow({
 });
 
 export const metadata = {
-    title: "World Arthritis Week 2025 - Pledge Certificate",
-    description: "Create your personalized World Arthritis Week 2025 pledge certificate. Commit to joint health awareness, early diagnosis, and comprehensive management of osteoarthritis.",
-    keywords: ["World Arthritis Week", "2025", "pledge certificate", "joint health", "osteoarthritis", "arthritis awareness"],
-    authors: [{ name: "DocPromise" }],
+    title: "Chronic Fatigue Syndrome Awareness - Pledge Certificate",
+    description: "Take the oath to restore energy and hope. Create your personalized pledge certificate for Chronic Fatigue Syndrome awareness and support.",
+    keywords: ["Chronic Fatigue Syndrome", "CFS", "pledge certificate", "CoQ CFS", "fatigue awareness", "energy restoration", "UNS"],
+    authors: [{ name: "Universal NutriScience" }],
     openGraph: {
-        title: "World Arthritis Week 2025 - Pledge Certificate",
-        description: "Create your personalized pledge certificate for joint preservation and arthritis awareness.",
+        title: "Chronic Fatigue Syndrome Awareness - Pledge Certificate",
+        description: "Take the oath to restore energy and hope. Join doctors committed to fighting chronic fatigue.",
         type: "website",
         images: [
             {
-                url: "/certificate.jpg",
-                width: 4267,
-                height: 3200,
-                alt: "World Arthritis Week 2025 Pledge Certificate",
+                url: "/intro_image.jpg",
+                width: 1024,
+                height: 768,
+                alt: "Low Battery? High Responsibility! - CFS Awareness",
             },
         ],
     },
     twitter: {
         card: "summary_large_image",
-        title: "World Arthritis Week 2025 - Pledge Certificate",
-        description: "Create your personalized pledge certificate for joint preservation and arthritis awareness.",
-        images: ["/certificate.jpg"],
+        title: "Chronic Fatigue Syndrome Awareness - Pledge Certificate",
+        description: "Take the oath to restore energy and hope. Join doctors committed to fighting chronic fatigue.",
+        images: ["/intro_image.jpg"],
     },
 };
 
