@@ -374,27 +374,27 @@ export default function CertificatePledgeApp() {
 
   // Clickable area positions (where users click to edit)
   const clickableAreas = {
-    name: { left: 38, top: 37, width: 35, height: 6 },
-    photo: { left: 32, top: 63, width: 17, height: 20 },
-    signature: { left: 53, top: 68, width: 17, height: 10 }
+    name: { left: 39, top: 37, width: 35, height: 6 },
+    photo: { left:30.5, top: 68, width: 16, height: 20 },
+    signature: { left: 51, top: 72, width: 18, height: 11 }
   };
 
   // Final render positions (where elements appear on generated certificate)
   const finalPositions = {
     name: {
-      x: 41,        // Horizontal position (0-100)
-      y: 41.4,      // Vertical position (0-100)
+      x: 40,        // Horizontal position (0-100)
+      y: 42.5,      // Vertical position (0-100)
       fontSize: 2.8 // Font size as % of image width
     },
     photo: {
-      x: 40.5,      // Center X position (0-100)
-      y: 73,      // Center Y position (0-100)
+      x: 38.7,      // Center X position (0-100)
+      y: 77.5,      // Center Y position (0-100)
       radius: 8   // Radius as % of image width
     },
     signature: {
-      x: 53,      // Left edge X position (0-100)
-      y: 67.5,      // Top edge Y position (0-100)
-      width: 26,    // Width as % of image width (increased from 17)
+      x: 51,      // Left edge X position (0-100)
+      y: 72,      // Top edge Y position (0-100)
+      width: 18,    // Width as % of image width (increased from 17)
       height: 15  // Height as % of image height (increased from 8)
     }
   };
