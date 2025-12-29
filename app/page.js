@@ -310,17 +310,14 @@ export default function CertificatePledgeApp() {
           ctx.closePath();
           ctx.clip();
 
-          // Draw photo centered in circle
-          const aspectRatio = photoImg.width / photoImg.height;
-          let drawWidth, drawHeight;
-
-          if (aspectRatio > 1) {
-            drawHeight = photoRadius * 2;
-            drawWidth = drawHeight * aspectRatio;
-          } else {
-            drawWidth = photoRadius * 2;
-            drawHeight = drawWidth / aspectRatio;
-          }
+          // Draw photo centered in circle - scale to fill the entire circle
+          // Use the larger scale factor to ensure the circle is completely filled
+          const scale = Math.max(
+            (photoRadius * 2) / photoImg.width,
+            (photoRadius * 2) / photoImg.height
+          );
+          const drawWidth = photoImg.width * scale;
+          const drawHeight = photoImg.height * scale;
 
           ctx.drawImage(
             photoImg,
