@@ -522,17 +522,15 @@ export default function CertificatePledgeApp() {
                 />
                 {/* Battery fill overlay */}
                 <div
-                  className="absolute top-[14%] left-[10%] bottom-[12%] overflow-hidden rounded-sm z-10"
+                  className="absolute top-[17%] left-[10%] bottom-[17%] overflow-hidden rounded-sm z-10"
                   style={{ width: `${batteryPercentage * 0.75}%` }}
                 >
                   <div
                     className="h-full w-full"
                     style={{
-                      background: batteryPercentage > 60
+                      background: batteryPercentage > 50
                         ? 'linear-gradient(180deg, #86efac 0%, #22c55e 50%, #16a34a 100%)'
-                        : batteryPercentage > 30
-                          ? 'linear-gradient(180deg, #fde047 0%, #eab308 50%, #ca8a04 100%)'
-                          : 'linear-gradient(180deg, #fca5a5 0%, #ef4444 50%, #dc2626 100%)',
+                        : 'linear-gradient(180deg, #fde047 0%, #eab308 50%, #ca8a04 100%)',
                     }}
                   />
                 </div>
@@ -994,17 +992,15 @@ export default function CertificatePledgeApp() {
                 />
                 {/* Battery fill overlay - Dynamic based on actual count */}
                 <div
-                  className="absolute top-[13%] left-[10%] bottom-[12%] overflow-hidden rounded-sm z-10"
+                  className="absolute top-[17%] left-[10%] bottom-[17%] overflow-hidden rounded-sm z-10"
                   style={{ width: `${batteryPercentage * 0.75}%` }}
                 >
                   <div
                     className="h-full w-full"
                     style={{
-                      background: batteryPercentage > 60
+                      background: batteryPercentage > 50
                         ? 'linear-gradient(180deg, #86efac 0%, #22c55e 50%, #16a34a 100%)'
-                        : batteryPercentage > 30
-                          ? 'linear-gradient(180deg, #fde047 0%, #eab308 50%, #ca8a04 100%)'
-                          : 'linear-gradient(180deg, #fca5a5 0%, #ef4444 50%, #dc2626 100%)',
+                        : 'linear-gradient(180deg, #fde047 0%, #eab308 50%, #ca8a04 100%)',
                     }}
                   />
                 </div>
