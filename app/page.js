@@ -17,7 +17,7 @@ export default function CertificatePledgeApp() {
 
   // Battery configuration
   const TOTAL_DOCTORS = 6000;
-  const [currentCertificates, setCurrentCertificates] = useState(3000); // Hardcoded for now, will be backend driven
+  const [currentCertificates, setCurrentCertificates] = useState(0); // Will be fetched from backend
   const batteryPercentage = Math.min((currentCertificates / TOTAL_DOCTORS) * 100, 100);
 
   const canvasRef = useRef(null);
@@ -85,6 +85,24 @@ export default function CertificatePledgeApp() {
       };
     }
   }, [showPhotoModal, stream]);
+
+  // Fetch current count from backend on page load
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const response = await fetch('/api/count');
+        const data = await response.json();
+        if (data.count !== undefined) {
+          setCurrentCertificates(data.count);
+        }
+      } catch (error) {
+        console.error('Error fetching count:', error);
+        // Keep the default value of 0 on error
+      }
+    };
+
+    fetchCount();
+  }, []);
 
   const startDrawing = (e) => {
     setIsDrawing(true);
@@ -195,7 +213,7 @@ export default function CertificatePledgeApp() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!name || !photo || !signature) {
       alert('Please complete all fields: name, photo, and signature');
       return;
@@ -207,6 +225,27 @@ export default function CertificatePledgeApp() {
         event_category: 'engagement',
         event_label: 'Certificate Generated',
       });
+    }
+
+    // Save submission to backend
+    try {
+      const response = await fetch('/api/submissions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name }),
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.count !== undefined) {
+        // Update the count with the new value from backend
+        setCurrentCertificates(data.count);
+      }
+    } catch (error) {
+      console.error('Error saving submission:', error);
+      // Continue with certificate generation even if submission fails
     }
 
     generateCertificate();
@@ -495,6 +534,14 @@ export default function CertificatePledgeApp() {
                           ? 'linear-gradient(180deg, #fde047 0%, #eab308 50%, #ca8a04 100%)'
                           : 'linear-gradient(180deg, #fca5a5 0%, #ef4444 50%, #dc2626 100%)',
                     }}
+                  />
+                </div>
+                {/* Recharge icon overlay */}
+                <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+                  <img
+                    src="/battery_inside_icon.png"
+                    alt="Recharge"
+                    className="w-[40%] h-auto opacity-90"
                   />
                 </div>
                 {/* Percentage text */}
@@ -945,23 +992,29 @@ export default function CertificatePledgeApp() {
                   alt="Battery"
                   className="w-full h-auto"
                 />
-                {/* Battery fill overlay - Full Charge */}
+                {/* Battery fill overlay - Dynamic based on actual count */}
                 <div
                   className="absolute top-[13%] left-[10%] bottom-[12%] overflow-hidden rounded-sm z-10"
-                  style={{ width: '75%' }} // Full logical width (matching the 75% scaling factor used in intro)
+                  style={{ width: `${batteryPercentage * 0.75}%` }}
                 >
                   <div
                     className="h-full w-full"
                     style={{
-                      background: 'linear-gradient(180deg, #86efac 0%, #22c55e 50%, #16a34a 100%)',
+                      background: batteryPercentage > 60
+                        ? 'linear-gradient(180deg, #86efac 0%, #22c55e 50%, #16a34a 100%)'
+                        : batteryPercentage > 30
+                          ? 'linear-gradient(180deg, #fde047 0%, #eab308 50%, #ca8a04 100%)'
+                          : 'linear-gradient(180deg, #fca5a5 0%, #ef4444 50%, #dc2626 100%)',
                     }}
                   />
                 </div>
-                {/* Percentage text */}
-                <div className="absolute inset-0 flex items-center justify-center z-20">
-                  <span className="font-bold text-[10px] sm:text-sm md:text-lg text-white drop-shadow-lg">
-                    100%
-                  </span>
+                {/* Recharge icon overlay */}
+                <div className="absolute inset-0 flex items-center justify-center z-15 pointer-events-none">
+                  <img
+                    src="/battery_inside_icon.png"
+                    alt="Recharge"
+                    className="w-[25%] h-auto opacity-90"
+                  />
                 </div>
               </div>
             </div>
