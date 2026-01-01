@@ -10,7 +10,7 @@ export async function GET() {
     const count = await db.collection('submissions').countDocuments();
 
     return NextResponse.json({
-      count: 2136,
+      count: 213,
       total: 6000
     });
   } catch (error) {
