@@ -1,24 +1,39 @@
-'use client'
-import { useState, useRef, useEffect } from 'react';
-import { Camera, Download, X, Check, Edit3, SwitchCamera, Battery, Zap } from 'lucide-react';
+"use client";
+import { useState, useRef, useEffect } from "react";
+import {
+  Camera,
+  Download,
+  X,
+  Check,
+  Edit3,
+  SwitchCamera,
+  Battery,
+  Zap,
+} from "lucide-react";
 
 export default function CertificatePledgeApp() {
-  const [step, setStep] = useState('intro'); // intro, editor, complete, outro
-  const [name, setName] = useState('');
+  const [step, setStep] = useState("intro"); // intro, editor, complete, outro
+  const [name, setName] = useState("");
   const [photo, setPhoto] = useState(null);
   const [signature, setSignature] = useState(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [showPhotoModal, setShowPhotoModal] = useState(false);
   const [activeDialog, setActiveDialog] = useState(null); // 'name', 'photo', 'signature', null
-  const [tempName, setTempName] = useState('');
-  const [certificateDimensions, setCertificateDimensions] = useState({ width: 0, height: 0 });
+  const [tempName, setTempName] = useState("");
+  const [certificateDimensions, setCertificateDimensions] = useState({
+    width: 0,
+    height: 0,
+  });
   const [generatedCertificate, setGeneratedCertificate] = useState(null);
-  const [facingMode, setFacingMode] = useState('user'); // 'user' for front camera, 'environment' for back camera
+  const [facingMode, setFacingMode] = useState("user"); // 'user' for front camera, 'environment' for back camera
 
   // Battery configuration
-  const TOTAL_DOCTORS = 6000;
+  const TOTAL_DOCTORS = 4000;
   const [currentCertificates, setCurrentCertificates] = useState(0); // Will be fetched from backend
-  const batteryPercentage = Math.min((currentCertificates / TOTAL_DOCTORS) * 100, 100);
+  const batteryPercentage = Math.min(
+    (currentCertificates / TOTAL_DOCTORS) * 100,
+    100,
+  );
 
   const canvasRef = useRef(null);
   const videoRef = useRef(null);
@@ -28,8 +43,8 @@ export default function CertificatePledgeApp() {
   const [stream, setStream] = useState(null);
 
   // Certificate image URLs
-  const certificateImageUrl = '/certificate.jpg'; // For editor view with placeholders
-  const certificateFinalImageUrl = '/certificate_final.jpg'; // For final generation
+  const certificateImageUrl = "/certificate.jpg"; // For editor view with placeholders
+  const certificateFinalImageUrl = "/certificate_final.jpg"; // For final generation
 
   // Track certificate image dimensions for responsive positioning
   useEffect(() => {
@@ -41,21 +56,21 @@ export default function CertificatePledgeApp() {
     };
 
     updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
+    window.addEventListener("resize", updateDimensions);
+    return () => window.removeEventListener("resize", updateDimensions);
   }, [step]);
 
   // Signature canvas setup
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
       // Clear canvas - no background (transparent)
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       // Configure drawing style
       ctx.lineWidth = 3;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = '#c41e3a';
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#c41e3a";
     }
   }, [activeDialog]);
 
@@ -71,17 +86,17 @@ export default function CertificatePledgeApp() {
           await video.play();
         } catch (err) {
           // Only log if it's not an abort error (which happens during camera switch)
-          if (err.name !== 'AbortError') {
-            console.error('Error playing video:', err);
+          if (err.name !== "AbortError") {
+            console.error("Error playing video:", err);
           }
         }
       };
 
       // Use loadedmetadata event to ensure video is ready
-      video.addEventListener('loadedmetadata', playVideo);
+      video.addEventListener("loadedmetadata", playVideo);
 
       return () => {
-        video.removeEventListener('loadedmetadata', playVideo);
+        video.removeEventListener("loadedmetadata", playVideo);
       };
     }
   }, [showPhotoModal, stream]);
@@ -90,13 +105,13 @@ export default function CertificatePledgeApp() {
   useEffect(() => {
     const fetchCount = async () => {
       try {
-        const response = await fetch('/api/count');
+        const response = await fetch("/api/count");
         const data = await response.json();
         if (data.count !== undefined) {
           setCurrentCertificates(data.count);
         }
       } catch (error) {
-        console.error('Error fetching count:', error);
+        console.error("Error fetching count:", error);
         // Keep the default value of 0 on error
       }
     };
@@ -107,12 +122,14 @@ export default function CertificatePledgeApp() {
   const startDrawing = (e) => {
     setIsDrawing(true);
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    const x = ((e.touches ? e.touches[0].clientX : e.clientX) - rect.left) * scaleX;
-    const y = ((e.touches ? e.touches[0].clientY : e.clientY) - rect.top) * scaleY;
+    const x =
+      ((e.touches ? e.touches[0].clientX : e.clientX) - rect.left) * scaleX;
+    const y =
+      ((e.touches ? e.touches[0].clientY : e.clientY) - rect.top) * scaleY;
     ctx.beginPath();
     ctx.moveTo(x, y);
   };
@@ -121,12 +138,14 @@ export default function CertificatePledgeApp() {
     if (!isDrawing) return;
     e.preventDefault();
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    const x = ((e.touches ? e.touches[0].clientX : e.clientX) - rect.left) * scaleX;
-    const y = ((e.touches ? e.touches[0].clientY : e.clientY) - rect.top) * scaleY;
+    const x =
+      ((e.touches ? e.touches[0].clientX : e.clientX) - rect.left) * scaleX;
+    const y =
+      ((e.touches ? e.touches[0].clientY : e.clientY) - rect.top) * scaleY;
     ctx.lineTo(x, y);
     ctx.stroke();
   };
@@ -141,7 +160,7 @@ export default function CertificatePledgeApp() {
 
   const clearSignature = () => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     // No background - keep transparent
     setSignature(null);
@@ -153,24 +172,24 @@ export default function CertificatePledgeApp() {
         video: {
           facingMode: facingMode,
           width: { ideal: 1280 },
-          height: { ideal: 720 }
-        }
+          height: { ideal: 720 },
+        },
       });
       setStream(mediaStream);
       setShowPhotoModal(true);
     } catch (err) {
-      console.error('Camera error:', err);
-      alert('Unable to access camera. Please check permissions.');
+      console.error("Camera error:", err);
+      alert("Unable to access camera. Please check permissions.");
     }
   };
 
   const switchCamera = async () => {
     // Stop current stream
     if (stream) {
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach((track) => track.stop());
     }
     // Toggle facing mode
-    const newFacingMode = facingMode === 'user' ? 'environment' : 'user';
+    const newFacingMode = facingMode === "user" ? "environment" : "user";
     setFacingMode(newFacingMode);
     // Start new stream with new facing mode
     try {
@@ -178,29 +197,29 @@ export default function CertificatePledgeApp() {
         video: {
           facingMode: newFacingMode,
           width: { ideal: 1280 },
-          height: { ideal: 720 }
-        }
+          height: { ideal: 720 },
+        },
       });
       setStream(mediaStream);
       // The useEffect will handle setting srcObject and playing the video
     } catch (err) {
-      console.error('Camera switch error:', err);
-      alert('Unable to switch camera. Please try again.');
+      console.error("Camera switch error:", err);
+      alert("Unable to switch camera. Please try again.");
     }
   };
 
   const capturePhoto = () => {
     const video = videoRef.current;
     if (!video || !video.videoWidth || !video.videoHeight) {
-      alert('Camera not ready. Please wait a moment and try again.');
+      alert("Camera not ready. Please wait a moment and try again.");
       return;
     }
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     ctx.drawImage(video, 0, 0);
-    const photoData = canvas.toDataURL('image/jpg', 0.9);
+    const photoData = canvas.toDataURL("image/jpg", 0.9);
     setPhoto(photoData);
     stopCamera();
     setShowPhotoModal(false);
@@ -208,31 +227,31 @@ export default function CertificatePledgeApp() {
 
   const stopCamera = () => {
     if (stream) {
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach((track) => track.stop());
       setStream(null);
     }
   };
 
   const handleSubmit = async () => {
     if (!name || !photo || !signature) {
-      alert('Please complete all fields: name, photo, and signature');
+      alert("Please complete all fields: name, photo, and signature");
       return;
     }
 
     // Track certificate generation event
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'generate_certificate', {
-        event_category: 'engagement',
-        event_label: 'Certificate Generated',
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("event", "generate_certificate", {
+        event_category: "engagement",
+        event_label: "Certificate Generated",
       });
     }
 
     // Save submission to backend
     try {
-      const response = await fetch('/api/submissions', {
-        method: 'POST',
+      const response = await fetch("/api/submissions", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ name }),
       });
@@ -244,7 +263,7 @@ export default function CertificatePledgeApp() {
         setCurrentCertificates(data.count);
       }
     } catch (error) {
-      console.error('Error saving submission:', error);
+      console.error("Error saving submission:", error);
       // Continue with certificate generation even if submission fails
     }
 
@@ -254,22 +273,22 @@ export default function CertificatePledgeApp() {
   const generateCertificate = () => {
     const canvas = finalCanvasRef.current;
     if (!canvas) {
-      console.error('Canvas ref is null');
+      console.error("Canvas ref is null");
       return;
     }
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
 
     // Load certificate image
     const img = new Image();
-    img.crossOrigin = 'anonymous';
+    img.crossOrigin = "anonymous";
 
     img.onerror = (err) => {
-      console.error('Error loading certificate image:', err);
-      alert('Error loading certificate image. Please try again.');
+      console.error("Error loading certificate image:", err);
+      alert("Error loading certificate image. Please try again.");
     };
 
     img.onload = () => {
-      console.log('Certificate image loaded:', img.width, 'x', img.height);
+      console.log("Certificate image loaded:", img.width, "x", img.height);
       canvas.width = img.width;
       canvas.height = img.height;
 
@@ -282,28 +301,37 @@ export default function CertificatePledgeApp() {
 
       // Position coordinates (responsive based on image size)
       // Name position
-      ctx.fillStyle = '#33589e'; // Blue color
+      ctx.fillStyle = "#33589e"; // Blue color
       ctx.font = `bold ${Math.round(imgWidth * (finalPositions.name.fontSize / 100))}px Barlow, sans-serif`;
-      ctx.textAlign = 'left';
+      ctx.textAlign = "left";
       const nameX = imgWidth * (finalPositions.name.x / 100);
       const nameY = imgHeight * (finalPositions.name.y / 100);
-      console.log('Name position:', { nameX, nameY, finalPositions: finalPositions.name });
+      console.log("Name position:", {
+        nameX,
+        nameY,
+        finalPositions: finalPositions.name,
+      });
       ctx.fillText(name, nameX, nameY);
 
       // Photo position - circular photo (approximately 48% across, 68% down)
       if (photo) {
         const photoImg = new Image();
         photoImg.onerror = (err) => {
-          console.error('Error loading photo:', err);
+          console.error("Error loading photo:", err);
         };
         photoImg.onload = () => {
-          console.log('Photo loaded:', photoImg.width, 'x', photoImg.height);
+          console.log("Photo loaded:", photoImg.width, "x", photoImg.height);
           ctx.save();
           // Create circular clip path for photo
           const photoX = imgWidth * (finalPositions.photo.x / 100); // Center X
           const photoY = imgHeight * (finalPositions.photo.y / 100); // Center Y
           const photoRadius = imgWidth * (finalPositions.photo.radius / 100); // Radius proportional to width
-          console.log('Photo position:', { photoX, photoY, photoRadius, finalPositions: finalPositions.photo });
+          console.log("Photo position:", {
+            photoX,
+            photoY,
+            photoRadius,
+            finalPositions: finalPositions.photo,
+          });
 
           ctx.beginPath();
           ctx.arc(photoX, photoY, photoRadius, 0, Math.PI * 2);
@@ -314,7 +342,7 @@ export default function CertificatePledgeApp() {
           // Use the larger scale factor to ensure the circle is completely filled
           const scale = Math.max(
             (photoRadius * 2) / photoImg.width,
-            (photoRadius * 2) / photoImg.height
+            (photoRadius * 2) / photoImg.height,
           );
           const drawWidth = photoImg.width * scale;
           const drawHeight = photoImg.height * scale;
@@ -324,7 +352,7 @@ export default function CertificatePledgeApp() {
             photoX - drawWidth / 2,
             photoY - drawHeight / 2,
             drawWidth,
-            drawHeight
+            drawHeight,
           );
           ctx.restore();
 
@@ -332,33 +360,41 @@ export default function CertificatePledgeApp() {
           if (signature) {
             const sigImg = new Image();
             sigImg.onerror = (err) => {
-              console.error('Error loading signature:', err);
+              console.error("Error loading signature:", err);
             };
             sigImg.onload = () => {
-              console.log('Signature loaded');
+              console.log("Signature loaded");
               const sigX = imgWidth * (finalPositions.signature.x / 100); // Left edge
               const sigY = imgHeight * (finalPositions.signature.y / 100); // Top edge
-              const sigWidth = imgWidth * (finalPositions.signature.width / 100); // Width proportional
-              const sigHeight = imgHeight * (finalPositions.signature.height / 100); // Height proportional
-              console.log('Signature position:', { sigX, sigY, sigWidth, sigHeight, finalPositions: finalPositions.signature });
+              const sigWidth =
+                imgWidth * (finalPositions.signature.width / 100); // Width proportional
+              const sigHeight =
+                imgHeight * (finalPositions.signature.height / 100); // Height proportional
+              console.log("Signature position:", {
+                sigX,
+                sigY,
+                sigWidth,
+                sigHeight,
+                finalPositions: finalPositions.signature,
+              });
 
               ctx.drawImage(sigImg, sigX, sigY, sigWidth, sigHeight);
 
-              console.log('Certificate generation complete');
+              console.log("Certificate generation complete");
               // Save the generated certificate as data URL
-              setGeneratedCertificate(canvas.toDataURL('image/jpg'));
-              setStep('complete');
+              setGeneratedCertificate(canvas.toDataURL("image/jpg"));
+              setStep("complete");
             };
             sigImg.src = signature;
           } else {
-            console.log('No signature provided');
-            setGeneratedCertificate(canvas.toDataURL('image/jpg'));
-            setStep('complete');
+            console.log("No signature provided");
+            setGeneratedCertificate(canvas.toDataURL("image/jpg"));
+            setStep("complete");
           }
         };
         photoImg.src = photo;
       } else {
-        console.log('No photo provided');
+        console.log("No photo provided");
         if (signature) {
           const sigImg = new Image();
           sigImg.onload = () => {
@@ -367,38 +403,38 @@ export default function CertificatePledgeApp() {
             const sigWidth = imgWidth * 0.22;
             const sigHeight = imgHeight * 0.105;
             ctx.drawImage(sigImg, sigX, sigY, sigWidth, sigHeight);
-            setGeneratedCertificate(canvas.toDataURL('image/jpg'));
-            setStep('complete');
+            setGeneratedCertificate(canvas.toDataURL("image/jpg"));
+            setStep("complete");
           };
           sigImg.src = signature;
         } else {
-          setGeneratedCertificate(canvas.toDataURL('image/jpg'));
-          setStep('complete');
+          setGeneratedCertificate(canvas.toDataURL("image/jpg"));
+          setStep("complete");
         }
       }
     };
 
-    console.log('Loading certificate image from:', certificateFinalImageUrl);
+    console.log("Loading certificate image from:", certificateFinalImageUrl);
     img.src = certificateFinalImageUrl;
   };
 
   const downloadCertificate = () => {
     if (!generatedCertificate) {
-      alert('Certificate not ready yet. Please wait.');
+      alert("Certificate not ready yet. Please wait.");
       return;
     }
-    const link = document.createElement('a');
-    link.download = `CFS_Pledge_Certificate_${name.replace(/\s+/g, '_')}.jpg`;
+    const link = document.createElement("a");
+    link.download = `CFS_Pledge_Certificate_${name.replace(/\s+/g, "_")}.jpg`;
     link.href = generatedCertificate;
     link.click();
 
     // Navigate to outro screen after download
-    setStep('outro');
+    setStep("outro");
   };
 
   const resetFlow = () => {
-    setStep('intro');
-    setName('');
+    setStep("intro");
+    setName("");
     setPhoto(null);
     setSignature(null);
     setGeneratedCertificate(null);
@@ -411,37 +447,42 @@ export default function CertificatePledgeApp() {
   // Clickable area positions (where users click to edit)
   const clickableAreas = {
     name: { left: 39, top: 37, width: 35, height: 6 },
-    photo: { left:30.5, top: 68, width: 16, height: 20 },
-    signature: { left: 51, top: 72, width: 18, height: 11 }
+    photo: { left: 30.5, top: 68, width: 16, height: 20 },
+    signature: { left: 51, top: 72, width: 18, height: 11 },
   };
 
   // Final render positions (where elements appear on generated certificate)
   const finalPositions = {
     name: {
-      x: 40,        // Horizontal position (0-100)
-      y: 42.5,      // Vertical position (0-100)
-      fontSize: 2.8 // Font size as % of image width
+      x: 40, // Horizontal position (0-100)
+      y: 42.5, // Vertical position (0-100)
+      fontSize: 2.8, // Font size as % of image width
     },
     photo: {
-      x: 38.7,      // Center X position (0-100)
-      y: 77.5,      // Center Y position (0-100)
-      radius: 8   // Radius as % of image width
+      x: 38.7, // Center X position (0-100)
+      y: 77.5, // Center Y position (0-100)
+      radius: 8, // Radius as % of image width
     },
     signature: {
-      x: 51,      // Left edge X position (0-100)
-      y: 72,      // Top edge Y position (0-100)
-      width: 18,    // Width as % of image width (increased from 17)
-      height: 15  // Height as % of image height (increased from 8)
-    }
+      x: 51, // Left edge X position (0-100)
+      y: 72, // Top edge Y position (0-100)
+      width: 18, // Width as % of image width (increased from 17)
+      height: 15, // Height as % of image height (increased from 8)
+    },
   };
 
   // ========== BATTERY COMPONENT ==========
-  const BatteryIndicator = ({ percentage, isCharging = false, size = 'large' }) => {
-    const isLarge = size === 'large';
-    const fillColor = percentage > 60 ? '#22c55e' : percentage > 30 ? '#eab308' : '#ef4444';
+  const BatteryIndicator = ({
+    percentage,
+    isCharging = false,
+    size = "large",
+  }) => {
+    const isLarge = size === "large";
+    const fillColor =
+      percentage > 60 ? "#22c55e" : percentage > 30 ? "#eab308" : "#ef4444";
 
     return (
-      <div className={`relative ${isLarge ? 'w-48 h-24' : 'w-32 h-16'}`}>
+      <div className={`relative ${isLarge ? "w-48 h-24" : "w-32 h-16"}`}>
         {/* Battery body */}
         <div className="absolute inset-0 border-4 border-gray-700 rounded-lg bg-white overflow-hidden">
           {/* Battery fill */}
@@ -456,8 +497,9 @@ export default function CertificatePledgeApp() {
           <div
             className="absolute inset-0 opacity-30"
             style={{
-              background: 'linear-gradient(135deg, transparent 40%, white 50%, transparent 60%)',
-              animation: 'shine 2s infinite',
+              background:
+                "linear-gradient(135deg, transparent 40%, white 50%, transparent 60%)",
+              animation: "shine 2s infinite",
             }}
           />
         </div>
@@ -467,7 +509,10 @@ export default function CertificatePledgeApp() {
         {/* Charging bolt */}
         {isCharging && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <Zap className={`${isLarge ? 'w-12 h-12' : 'w-8 h-8'} text-yellow-500 animate-pulse`} fill="currentColor" />
+            <Zap
+              className={`${isLarge ? "w-12 h-12" : "w-8 h-8"} text-yellow-500 animate-pulse`}
+              fill="currentColor"
+            />
           </div>
         )}
 
@@ -482,7 +527,7 @@ export default function CertificatePledgeApp() {
   };
 
   // ========== INTRO SCREEN ==========
-  if (step === 'intro') {
+  if (step === "intro") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#faf8f5] sm:p-4">
         {/* Container that holds the image and all overlays */}
@@ -498,16 +543,19 @@ export default function CertificatePledgeApp() {
           <div
             className="absolute flex flex-col items-center"
             style={{
-              top: '22%',
-              left: '0',
-              width: '100%',
+              top: "22%",
+              left: "0",
+              width: "100%",
               // transform: 'translateX(-50%)', // No longer needed with width 100%
             }}
           >
             <div className="p-2 sm:p-4 w-full flex flex-col items-center">
               <div className="text-center mb-1 sm:mb-2">
                 {/* <p className="text-[8px] sm:text-xs text-gray-700 font-medium">Doctors who have taken the oath</p> */}
-                <p className="text-xs sm:text-lg font-bold text-gray-900">{currentCertificates.toLocaleString()} / {TOTAL_DOCTORS.toLocaleString()}</p>
+                <p className="text-xs sm:text-lg font-bold text-gray-900">
+                  {currentCertificates.toLocaleString()} /{" "}
+                  {TOTAL_DOCTORS.toLocaleString()}
+                </p>
               </div>
               {/* Battery using actual image with overlay */}
               <div className="relative w-[21%] mx-auto">
@@ -525,9 +573,10 @@ export default function CertificatePledgeApp() {
                   <div
                     className="h-full w-full"
                     style={{
-                      background: batteryPercentage > 50
-                        ? 'linear-gradient(180deg, #86efac 0%, #22c55e 50%, #16a34a 100%)'
-                        : 'linear-gradient(180deg, #fde047 0%, #eab308 50%, #ca8a04 100%)',
+                      background:
+                        batteryPercentage > 50
+                          ? "linear-gradient(180deg, #86efac 0%, #22c55e 50%, #16a34a 100%)"
+                          : "linear-gradient(180deg, #fde047 0%, #eab308 50%, #ca8a04 100%)",
                     }}
                   />
                 </div>
@@ -551,15 +600,15 @@ export default function CertificatePledgeApp() {
 
           {/* Transparent clickable area over the TAKE OATH button */}
           <div
-            onClick={() => setStep('editor')}
+            onClick={() => setStep("editor")}
             className="absolute cursor-pointer hover:bg-white/10 transition-all active:bg-white/20 rounded z-50"
             style={{
-              left: '50%',
-              transform: 'translateX(-50%)',
-              bottom: '2%',
-              width: '35%',
-              height: '7%',
-              minHeight: '50px',
+              left: "50%",
+              transform: "translateX(-50%)",
+              bottom: "2%",
+              width: "35%",
+              height: "7%",
+              minHeight: "50px",
             }}
             title="Take Oath"
           />
@@ -569,15 +618,17 @@ export default function CertificatePledgeApp() {
   }
 
   // Editor Screen with clickable areas
-  if (step === 'editor') {
+  if (step === "editor") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50/30 to-red-50/20 flex items-center justify-center p-4">
         {/* Hidden canvas for certificate generation */}
-        <canvas ref={finalCanvasRef} style={{ display: 'none' }} />
+        <canvas ref={finalCanvasRef} style={{ display: "none" }} />
         <div className="max-w-5xl w-full">
           <div className="text-center mb-8">
             {/* <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3 tracking-tight">World Arthritis Week 2025</h1> */}
-            <p className="text-lg text-gray-600 font-medium">Click on the highlighted areas to add your details</p>
+            <p className="text-lg text-gray-600 font-medium">
+              Click on the highlighted areas to add your details
+            </p>
           </div>
 
           <div className="bg-white rounded-3xl shadow-2xl overflow-hidden mb-8 relative">
@@ -589,8 +640,12 @@ export default function CertificatePledgeApp() {
                 className="w-full h-auto"
                 onLoad={() => {
                   if (certificateImgRef.current) {
-                    const rect = certificateImgRef.current.getBoundingClientRect();
-                    setCertificateDimensions({ width: rect.width, height: rect.height });
+                    const rect =
+                      certificateImgRef.current.getBoundingClientRect();
+                    setCertificateDimensions({
+                      width: rect.width,
+                      height: rect.height,
+                    });
                   }
                 }}
               />
@@ -601,9 +656,12 @@ export default function CertificatePledgeApp() {
                   {/* Clickable Areas with completion indicators */}
                   {/* Name Area */}
                   <div
-                    onClick={() => setActiveDialog('name')}
-                    className={`absolute cursor-pointer transition-all ${name ? 'bg-emerald-500/10 hover:bg-emerald-500/20' : 'hover:bg-black/5'
-                      }`}
+                    onClick={() => setActiveDialog("name")}
+                    className={`absolute cursor-pointer transition-all ${
+                      name
+                        ? "bg-emerald-500/10 hover:bg-emerald-500/20"
+                        : "hover:bg-black/5"
+                    }`}
                     style={{
                       left: `${clickableAreas.name.left}%`,
                       top: `${clickableAreas.name.top}%`,
@@ -621,9 +679,12 @@ export default function CertificatePledgeApp() {
 
                   {/* Photo Area */}
                   <div
-                    onClick={() => setActiveDialog('photo')}
-                    className={`absolute cursor-pointer rounded-full transition-all ${photo ? 'bg-emerald-500/10 hover:bg-emerald-500/20' : 'hover:bg-black/5'
-                      }`}
+                    onClick={() => setActiveDialog("photo")}
+                    className={`absolute cursor-pointer rounded-full transition-all ${
+                      photo
+                        ? "bg-emerald-500/10 hover:bg-emerald-500/20"
+                        : "hover:bg-black/5"
+                    }`}
                     style={{
                       left: `${clickableAreas.photo.left}%`,
                       top: `${clickableAreas.photo.top}%`,
@@ -641,9 +702,12 @@ export default function CertificatePledgeApp() {
 
                   {/* Signature Area */}
                   <div
-                    onClick={() => setActiveDialog('signature')}
-                    className={`absolute cursor-pointer transition-all ${signature ? 'bg-emerald-500/10 hover:bg-emerald-500/20' : 'hover:bg-black/5'
-                      }`}
+                    onClick={() => setActiveDialog("signature")}
+                    className={`absolute cursor-pointer transition-all ${
+                      signature
+                        ? "bg-emerald-500/10 hover:bg-emerald-500/20"
+                        : "hover:bg-black/5"
+                    }`}
                     style={{
                       left: `${clickableAreas.signature.left}%`,
                       top: `${clickableAreas.signature.top}%`,
@@ -665,7 +729,7 @@ export default function CertificatePledgeApp() {
 
           <div className="text-center flex gap-4 justify-center">
             <button
-              onClick={() => setStep('intro')}
+              onClick={() => setStep("intro")}
               className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-4 px-8 rounded-xl text-lg transition-all"
             >
               Back
@@ -673,7 +737,9 @@ export default function CertificatePledgeApp() {
             <button
               onClick={() => {
                 if (!name || !photo || !signature) {
-                  alert('Please complete all fields: name, photo, and signature');
+                  alert(
+                    "Please complete all fields: name, photo, and signature",
+                  );
                   return;
                 }
                 handleSubmit();
@@ -686,7 +752,7 @@ export default function CertificatePledgeApp() {
         </div>
 
         {/* Name Dialog */}
-        {activeDialog === 'name' && (
+        {activeDialog === "name" && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl overflow-hidden max-w-md w-full shadow-2xl">
               <div className="bg-red-700 text-white px-6 py-5 flex items-center justify-between">
@@ -694,7 +760,7 @@ export default function CertificatePledgeApp() {
                 <button
                   onClick={() => {
                     setActiveDialog(null);
-                    setTempName('');
+                    setTempName("");
                   }}
                   className="text-white/80 hover:text-white hover:bg-white/10 p-2 rounded-lg transition-all"
                 >
@@ -717,7 +783,7 @@ export default function CertificatePledgeApp() {
                   onClick={() => {
                     setName(tempName);
                     setActiveDialog(null);
-                    setTempName('');
+                    setTempName("");
                   }}
                   disabled={!tempName.trim()}
                   className="w-full mt-6 bg-red-700 hover:bg-red-800 text-white font-semibold py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -730,7 +796,7 @@ export default function CertificatePledgeApp() {
         )}
 
         {/* Photo Dialog */}
-        {activeDialog === 'photo' && !showPhotoModal && (
+        {activeDialog === "photo" && !showPhotoModal && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl overflow-hidden max-w-md w-full shadow-2xl">
               <div className="bg-red-700 text-white px-6 py-5 flex items-center justify-between">
@@ -753,7 +819,11 @@ export default function CertificatePledgeApp() {
                   </button>
                 ) : (
                   <div>
-                    <img src={photo} alt="Captured" className="w-full rounded-lg mb-4 border border-gray-200" />
+                    <img
+                      src={photo}
+                      alt="Captured"
+                      className="w-full rounded-lg mb-4 border border-gray-200"
+                    />
                     <div className="flex gap-3">
                       <button
                         onClick={() => {
@@ -802,11 +872,14 @@ export default function CertificatePledgeApp() {
                     playsInline
                     muted
                     className="w-full h-auto"
-                    style={{ minHeight: '300px' }}
+                    style={{ minHeight: "300px" }}
                   />
                   {/* Circular guide overlay */}
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="relative" style={{ width: '280px', height: '280px' }}>
+                    <div
+                      className="relative"
+                      style={{ width: "280px", height: "280px" }}
+                    >
                       <div className="absolute inset-0 border-4 border-white rounded-full opacity-80"></div>
                       <div className="absolute inset-0 border-4 border-red-500 rounded-full opacity-50 animate-pulse"></div>
                       <p className="absolute -bottom-14 left-1/2 -translate-x-1/2 text-white text-sm font-semibold bg-black/50 px-3 py-1 rounded-full whitespace-nowrap">
@@ -847,11 +920,13 @@ export default function CertificatePledgeApp() {
         )}
 
         {/* Signature Dialog */}
-        {activeDialog === 'signature' && (
+        {activeDialog === "signature" && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50">
             <div className="bg-white rounded-2xl overflow-hidden w-full h-full sm:h-auto sm:max-w-4xl sm:w-full shadow-2xl flex flex-col">
               <div className="bg-red-700 text-white px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between flex-shrink-0">
-                <h3 className="text-lg sm:text-xl font-semibold">Add Your Signature</h3>
+                <h3 className="text-lg sm:text-xl font-semibold">
+                  Add Your Signature
+                </h3>
                 <button
                   onClick={() => setActiveDialog(null)}
                   className="text-white/80 hover:text-white hover:bg-white/10 p-2 rounded-lg transition-all"
@@ -865,7 +940,9 @@ export default function CertificatePledgeApp() {
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
                       <div className="flex flex-col sm:flex-row items-center gap-2 text-gray-400 px-4 text-center">
                         <Edit3 className="w-5 h-5" />
-                        <span className="text-sm sm:text-base font-medium">Sign here with your mouse or finger</span>
+                        <span className="text-sm sm:text-base font-medium">
+                          Sign here with your mouse or finger
+                        </span>
                       </div>
                     </div>
                   )}
@@ -881,7 +958,7 @@ export default function CertificatePledgeApp() {
                     onTouchMove={draw}
                     onTouchEnd={stopDrawing}
                     className="w-full h-full touch-none cursor-crosshair relative z-10"
-                    style={{ maxHeight: '60vh' }}
+                    style={{ maxHeight: "60vh" }}
                   />
                 </div>
                 <div className="flex gap-3 sm:gap-4 flex-shrink-0">
@@ -908,7 +985,7 @@ export default function CertificatePledgeApp() {
   }
 
   // Complete Screen
-  if (step === 'complete') {
+  if (step === "complete") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50/30 to-red-50/20 flex items-center justify-center p-4">
         <div className="max-w-5xl w-full">
@@ -916,8 +993,12 @@ export default function CertificatePledgeApp() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-red-600 rounded-full mb-4">
               <Check className="w-10 h-10 text-white" />
             </div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-2 tracking-tight">Certificate Generated!</h2>
-            <p className="text-lg text-gray-600 font-medium">Your pledge certificate is ready to download</p>
+            <h2 className="text-4xl font-bold text-gray-900 mb-2 tracking-tight">
+              Certificate Generated!
+            </h2>
+            <p className="text-lg text-gray-600 font-medium">
+              Your pledge certificate is ready to download
+            </p>
           </div>
 
           <div className="bg-white rounded-3xl shadow-2xl overflow-hidden mb-8">
@@ -955,7 +1036,7 @@ export default function CertificatePledgeApp() {
   }
 
   // Outro Screen - shown after download
-  if (step === 'outro') {
+  if (step === "outro") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#faf8f5] sm:p-4">
         {/* Container that holds the image and all overlays */}
@@ -971,14 +1052,17 @@ export default function CertificatePledgeApp() {
           <div
             className="absolute flex flex-col items-center"
             style={{
-              top: '22%',
-              left: '0',
-              width: '100%',
+              top: "22%",
+              left: "0",
+              width: "100%",
             }}
           >
             <div className="p-2 sm:p-4 w-full flex flex-col items-center">
               <div className="text-center mb-1 sm:mb-2">
-                <p className="text-xs sm:text-lg font-bold text-gray-900">{currentCertificates.toLocaleString()} / {TOTAL_DOCTORS.toLocaleString()}</p>
+                <p className="text-xs sm:text-lg font-bold text-gray-900">
+                  {currentCertificates.toLocaleString()} /{" "}
+                  {TOTAL_DOCTORS.toLocaleString()}
+                </p>
               </div>
               <div className="relative w-[21%] mx-auto">
                 {/* Battery background image - crisp */}
@@ -995,9 +1079,10 @@ export default function CertificatePledgeApp() {
                   <div
                     className="h-full w-full"
                     style={{
-                      background: batteryPercentage > 50
-                        ? 'linear-gradient(180deg, #86efac 0%, #22c55e 50%, #16a34a 100%)'
-                        : 'linear-gradient(180deg, #fde047 0%, #eab308 50%, #ca8a04 100%)',
+                      background:
+                        batteryPercentage > 50
+                          ? "linear-gradient(180deg, #86efac 0%, #22c55e 50%, #16a34a 100%)"
+                          : "linear-gradient(180deg, #fde047 0%, #eab308 50%, #ca8a04 100%)",
                     }}
                   />
                 </div>
